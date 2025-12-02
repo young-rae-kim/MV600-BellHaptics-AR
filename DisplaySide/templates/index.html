@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bell Strike Trigger</title>
+    <style>
+      body {
+        background-color: #2c3e50;
+        margin: 0;
+        padding: 20px;
+        font-family: sans-serif;
+        color: #ecf0f1;
+      }
+      .panel {
+        background: #34495e;
+        padding: 20px;
+        border-radius: 8px;
+        display: inline-block;
+      }
+      select, button {
+        margin: 5px 0;
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel">
+      <h3>Rock Code Selector</h3>
+
+      <label for="codeX">codeX (0~2)</label>
+      <select id="codeX">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+
+      <label for="codeY">codeY (0~2)</label>
+      <select id="codeY">
+        <!-- (0,0)은 안 쓴다 했으니, 기본은 1부터로 해두자 -->
+        <option value="0">0</option>
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+      </select>
+
+      <br />
+      <button onclick="send()">Send Signal</button>
+
+      <p id="status"></p>
+    </div>
+
+    <script>
+      function send() {
+        const codeX = parseInt(document.getElementById("codeX").value);
+        const codeY = parseInt(document.getElementById("codeY").value);
+
+        fetch("/press_button", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ codeX: codeX, codeY: codeY }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            const s = document.getElementById("status");
+            s.textContent =
+              "Armed Pressed | count=" +
+              data.count +
+              " | code=(" +
+              data.codeX +
+              "," +
+              data.codeY +
+              ")";
+          })
+          .catch((err) => console.error(err));
+      }
+    </script>
+  </body>
+</html>
