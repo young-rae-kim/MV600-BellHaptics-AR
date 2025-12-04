@@ -54,31 +54,50 @@
     </div>
 
     <script>
-      function send() {
+      async function send() {
         const codeX = parseInt(document.getElementById("codeX").value);
         const codeY = parseInt(document.getElementById("codeY").value);
 
-        fetch("/press_button", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ codeX: codeX, codeY: codeY }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-            const s = document.getElementById("status");
-            s.textContent =
-              "Armed Pressed | count=" +
-              data.count +
-              " | code=(" +
-              data.codeX +
-              "," +
-              data.codeY +
-              ")";
-          })
-          .catch((err) => console.error(err));
+        try {
+          // 🔹 1) /press_button 호출 (HMD용)
+          // 🔹 2) /trigger_haptic 호출 (PC용)
+          const [pressRes, hapticRes] = await Promise.all([
+            fetch("/press_button", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ codeX: codeX, codeY: codeY }),
+            }),
+            fetch("/trigger_haptic", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              // 굳이 바디 필요 없으면 빈 객체 보내도 됨
+              body: JSON.stringify({}),
+            }),
+          ]);
+
+          const pressData = await pressRes.json();   // { status, seq, codeX, codeY }
+          const hapticData = await hapticRes.json(); // { status, haptic_seq }
+
+          const s = document.getElementById("status");
+          s.textContent =
+            "Armed Pressed | seq=" +
+            pressData.seq +
+            " | code=(" +
+            pressData.codeX +
+            "," +
+            pressData.codeY +
+            ")" +
+            " | haptic_seq=" +
+            hapticData.haptic_seq;
+        } catch (err) {
+          console.error(err);
+          const s = document.getElementById("status");
+          s.textContent = "Error: " + err;
+        }
       }
     </script>
   </body>

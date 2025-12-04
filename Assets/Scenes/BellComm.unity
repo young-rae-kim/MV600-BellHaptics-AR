@@ -819,12 +819,12 @@ MonoBehaviour:
   flowerAnimator: {fileID: 967650125}
   particleObject: {fileID: 1944206316}
   rockManager: {fileID: 141475091}
-  serverURL: ws://192.168.0.22:5000/ws
+  serverURL: ws://192.168.0.108:5000/ws
   statusText: {fileID: 584184423}
   messageText: {fileID: 2070902731}
   hmd: {fileID: 1625292132}
   pressedDisplayDuration: 0.1
-  flowerVisibleDuration: 10
+  flowerVisibleDuration: 15
 --- !u!1 &84604868
 GameObject:
   m_ObjectHideFlags: 0
@@ -12011,6 +12011,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1065050330}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1656642120 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4912737261135617146, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+  m_PrefabInstance: {fileID: 1689969688}
+  m_PrefabAsset: {fileID: 0}
 --- !u!137 &1657422864 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 5776135763558778469, guid: e91a4e117c6499a40895157eb6ce5f3f, type: 3}
@@ -12214,6 +12219,104 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1689969688
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1806538534}
+    m_Modifications:
+    - target: {fileID: 4906682973963958157, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906682973963958157, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906682973963958157, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906682973963958157, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906682973963958157, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 4912737261135617146, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_Name
+      value: CUE 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+--- !u!4 &1689969689 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7192182557095796880, guid: 5e8439d5eb0d8bb4587112cd18c2ad8a, type: 3}
+  m_PrefabInstance: {fileID: 1689969688}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1701137154
 GameObject:
   m_ObjectHideFlags: 0
@@ -12942,6 +13045,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1806538534}
+  - component: {fileID: 1806538535}
   m_Layer: 0
   m_Name: Flower
   m_TagString: Untagged
@@ -12964,8 +13068,23 @@ Transform:
   m_Children:
   - {fileID: 967650126}
   - {fileID: 1944206321}
+  - {fileID: 1689969689}
   m_Father: {fileID: 483461630}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1806538535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806538533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0bc5f9576bf59d4ca50b0bf9c4b78a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visualCueObject: {fileID: 1656642120}
+  startOn: 1
 --- !u!1 &1839524420
 GameObject:
   m_ObjectHideFlags: 0
