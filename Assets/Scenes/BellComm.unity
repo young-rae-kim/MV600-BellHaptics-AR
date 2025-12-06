@@ -812,14 +812,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e581bd3924fd0d4487dab11953ec1ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  userId: 00000001
+  userId: 00000002
   isContacted: 1
   leftHandTouchOrigin: {fileID: 969302676}
   rightHandTouchOrigin: {fileID: 773475696}
   flowerAnimator: {fileID: 967650125}
   particleObject: {fileID: 1944206316}
   rockManager: {fileID: 141475091}
-  serverURL: ws://192.168.0.108:5000/ws
+  visualCueObject: {fileID: 1656642120}
+  cueStartOn: 1
+  serverURL: ws://192.168.50.107:5000/ws
   statusText: {fileID: 584184423}
   messageText: {fileID: 2070902731}
   hmd: {fileID: 1625292132}

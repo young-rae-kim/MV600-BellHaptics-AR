@@ -7,10 +7,10 @@ sock = Sock(app)
 
 # 전역 상태
 connected_users = {}
-# button_pressed_count 대신 "이벤트 번호" 사용
-button_pressed_seq = 0          # 0, 1, 2, 3, ... (버튼 누를 때마다 +1)
-current_code = {"x": 0, "y": 1} # 현재 선택된 code
+button_pressed_seq = 0          # 0, 1, 2, 3, ...
+current_code = {"x": 0, "y": 1}
 haptic_seq = 0
+cue_seq = 0
 
 @app.route('/')
 def index():
@@ -18,12 +18,11 @@ def index():
 
 @sock.route('/ws')
 def websocket(ws):
-    global connected_users, button_pressed_seq, haptic_seq
+    global connected_users, button_pressed_seq, haptic_seq, cue_seq
 
-    # 이 클라이언트가 마지막으로 본 버튼 이벤트 번호
-    # 현재까지 발생한 이벤트는 "이미 본 것으로" 처리하고 시작하고 싶으면 이렇게:
     last_seen_seq = button_pressed_seq
     last_seen_haptic_seq = haptic_seq
+    last_seen_cue_seq = cue_seq
 
     while True:
         data = ws.receive()
@@ -48,9 +47,7 @@ def websocket(ws):
                 if msg.get("is_contact"):
                     print(f"User {user_id} is in contact! Hand Data Len: {len(msg.get('left_hand', []))}")
 
-            # 버튼 이벤트 브로드캐스트 로직
-            # 전역 button_pressed_seq가 이 클라이언트가 마지막으로 본 seq보다 크면
-            # 아직 이 이벤트를 안 받은 것 → payload 보내기
+            # 버튼 이벤트 브로드캐스트
             if button_pressed_seq > last_seen_seq:
                 payload = {
                     "pressed": True,
@@ -59,10 +56,9 @@ def websocket(ws):
                 }
                 ws.send(json.dumps(payload))
                 print(f"Sent Pressed Event to {user_id or 'unknown'}:", payload)
-
-                # 이 클라이언트는 이제 최신 이벤트까지 봤다고 표시
                 last_seen_seq = button_pressed_seq
             
+            # 햅틱 이벤트 브로드캐스트
             if haptic_seq > last_seen_haptic_seq:
                 payload = {
                     "haptic": True
@@ -70,6 +66,15 @@ def websocket(ws):
                 ws.send(json.dumps(payload))
                 print(f"Sent Haptic Event to {user_id or 'unknown'}:", payload)
                 last_seen_haptic_seq = haptic_seq
+            
+            # Visual Cue 토글 이벤트 브로드캐스트
+            if cue_seq > last_seen_cue_seq:
+                payload = {
+                    "cue_toggle": True
+                }
+                ws.send(json.dumps(payload))
+                print(f"Sent Cue Toggle Event to {user_id or 'unknown'}:", payload)
+                last_seen_cue_seq = cue_seq
 
         except Exception as e:
             print("WS Error:", e)
@@ -85,6 +90,33 @@ def get_user():
         return jsonify(connected_users[uid])
     return jsonify({"error": "User not found"}), 404
 
+# 1) 코드만 설정하는 API
+@app.route("/set_code", methods=["POST"])
+def set_code():
+    """
+    codeX, codeY만 설정하고, 신호는 보내지 않음.
+    """
+    global current_code
+    data = request.get_json(silent=True) or {}
+
+    code_x = data.get("codeX")
+    code_y = data.get("codeY")
+
+    if code_x is None or code_y is None:
+        return jsonify({"error": "codeX and codeY required"}), 400
+
+    current_code["x"] = int(code_x)
+    current_code["y"] = int(code_y)
+
+    print(f"Code set to ({current_code['x']},{current_code['y']})")
+
+    return jsonify({
+        "status": "code_set",
+        "codeX": current_code["x"],
+        "codeY": current_code["y"]
+    })
+
+# 2) PC 햅틱 트리거
 @app.route("/trigger_haptic", methods=["POST"])
 def trigger_haptic():
     """
@@ -102,19 +134,14 @@ def trigger_haptic():
         "haptic_seq": haptic_seq
     })
 
+# 3) 현재 설정된 code로 Pressed 이벤트만 브로드캐스트
 @app.route("/press_button", methods=["POST"])
 def press_button():
     global button_pressed_seq, current_code
     data = request.get_json(silent=True) or {}
 
-    # 드롭다운에서 선택한 코드값 갱신
-    code_x = data.get("codeX")
-    code_y = data.get("codeY")
-    if code_x is not None and code_y is not None:
-        current_code["x"] = int(code_x)
-        current_code["y"] = int(code_y)
-
-    # 새로운 버튼 이벤트 발생
+    # 여기서는 더 이상 codeX, codeY를 안 바꿈
+    # current_code에 이미 저장된 값 그대로 사용
     button_pressed_seq += 1
 
     print(f"Button pressed! seq={button_pressed_seq}, code=({current_code['x']},{current_code['y']})")
@@ -124,6 +151,24 @@ def press_button():
         "seq": button_pressed_seq,
         "codeX": current_code["x"],
         "codeY": current_code["y"]
+    })
+
+# 4) HMD 쪽 Visual Cue 토글 신호 브로드캐스트
+@app.route("/toggle_cue", methods=["POST"])
+def toggle_cue():
+    """
+    HMD 쪽 Visual Cue 토글하라고 신호만 쏘는 API.
+    Unity(HMD)가 /ws로 붙어있다가 이 이벤트를 보고 visual cue를 토글.
+    """
+    global cue_seq
+    data = request.get_json(silent=True) or {}
+
+    cue_seq += 1
+    print(f"Visual cue toggle requested! cue_seq={cue_seq}")
+
+    return jsonify({
+        "status": "cue_armed",
+        "cue_seq": cue_seq
     })
 
 if __name__ == "__main__":

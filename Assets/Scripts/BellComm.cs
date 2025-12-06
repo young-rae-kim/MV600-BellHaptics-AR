@@ -63,6 +63,10 @@ public class BellComm : MonoBehaviour
     [SerializeField]
     private RockManager rockManager;
 
+    [Header("Visual Cue (Network Toggle)")]
+    public GameObject visualCueObject;
+    public bool cueStartOn = false;
+
     public string serverURL = "ws://192.168.0.22:5000/ws";
 
     public TMP_Text statusText;
@@ -73,7 +77,8 @@ public class BellComm : MonoBehaviour
     private CancellationTokenSource cts;
 
     // 상태 플래그
-    private bool pressedPending = false;       // 새 Pressed 이벤트가 들어왔는지
+    private bool pressedPending = false;
+    private bool cueTogglePending = false;
     private int pendingCodeX = 0;
     private int pendingCodeY = 0;
 
@@ -95,13 +100,16 @@ public class BellComm : MonoBehaviour
             hmd = Camera.main.transform;
 
         if (messageText != null)
-            defaultMessage = messageText.text;   // 시작할 때 기본 텍스트 저장
+            defaultMessage = messageText.text;
 
         if (flowerAnimator != null)
             flowerAnimator.gameObject.SetActive(false);
         
         if (particleObject != null)
             particleObject.SetActive(false);
+        
+        if (visualCueObject != null)
+            visualCueObject.SetActive(cueStartOn);
 
         ConnectWebSocket();
         InvokeRepeating(nameof(SendTelemetry), 0.1f, 0.05f);
@@ -166,6 +174,11 @@ public class BellComm : MonoBehaviour
                 string trimmed = msg.TrimStart();
                 if (trimmed.StartsWith("{"))
                 {
+                    if (msg.Contains("\"cue_toggle\"") && msg.Contains("true"))
+                    {
+                        cueTogglePending = true;
+                    }
+
                     try
                     {
                         PressPayload payload = JsonUtility.FromJson<PressPayload>(msg);
@@ -280,6 +293,23 @@ public class BellComm : MonoBehaviour
 
                 flowerTimer = flowerVisibleDuration;
                 flowerPending = true;
+            }
+        }
+
+        // 서버에서 cue_toggle 들어온 경우
+        if (cueTogglePending)
+        {
+            cueTogglePending = false;
+
+            if (visualCueObject != null)
+            {
+                bool next = !visualCueObject.activeSelf;
+                visualCueObject.SetActive(next);
+                Debug.Log("[BellComm] Visual cue toggled to " + (next ? "ON" : "OFF"));
+            }
+            else
+            {
+                Debug.LogWarning("[BellComm] visualCueObject not assigned for cue toggle.");
             }
         }
 

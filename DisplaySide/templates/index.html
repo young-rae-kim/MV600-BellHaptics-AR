@@ -32,49 +32,88 @@
     <div class="panel">
       <h3>Rock Code Selector</h3>
 
-      <label for="codeX">codeX (0~2)</label>
+      <label for="codeX">codeA (0~2)</label>
       <select id="codeX">
         <option value="0">0</option>
         <option value="1">1</option>
         <option value="2">2</option>
       </select>
 
-      <label for="codeY">codeY (0~2)</label>
+      <label for="codeY">codeH (0~2)</label>
       <select id="codeY">
-        <!-- (0,0)은 안 쓴다 했으니, 기본은 1부터로 해두자 -->
         <option value="0">0</option>
         <option value="1" selected>1</option>
         <option value="2">2</option>
       </select>
 
       <br />
-      <button onclick="send()">Send Signal</button>
+      <!-- ✅ 코드만 설정하는 버튼 -->
+      <button onclick="applyCode()">Apply Code Only</button>
+      <!-- ✅ 현재 코드로 신호 + PC 햅틱 -->
+      <button onclick="sendSignal()">Send Signal</button>
+      <!-- ✅ HMD Visual Cue 토글 버튼 -->
+      <button onclick="toggleCue()">Toggle Visual Cue</button>
 
       <p id="status"></p>
     </div>
 
     <script>
-      async function send() {
+      async function applyCode() {
         const codeX = parseInt(document.getElementById("codeX").value);
         const codeY = parseInt(document.getElementById("codeY").value);
 
         try {
-          // 🔹 1) /press_button 호출 (HMD용)
-          // 🔹 2) /trigger_haptic 호출 (PC용)
+          const res = await fetch("/set_code", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ codeX: codeX, codeY: codeY }),
+          });
+
+          const data = await res.json();
+          console.log("set_code:", data);
+
+          const s = document.getElementById("status");
+          s.textContent =
+            "Code set → (" + data.codeX + "," + data.codeY + ")";
+        } catch (err) {
+          console.error(err);
+          document.getElementById("status").textContent =
+            "Error (set_code): " + err;
+        }
+      }
+
+      async function sendSignal() {
+        const codeX = parseInt(document.getElementById("codeX").value);
+        const codeY = parseInt(document.getElementById("codeY").value);
+
+        try {
+          // 1) 먼저 codeX, codeY 설정
+          const setRes = await fetch("/set_code", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ codeX: codeX, codeY: codeY }),
+          });
+          const setData = await setRes.json();
+          console.log("set_code (from sendSignal):", setData);
+
+          // 2) 그 다음 현재 코드로 Press + Haptic 동시에
           const [pressRes, hapticRes] = await Promise.all([
             fetch("/press_button", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ codeX: codeX, codeY: codeY }),
+              body: JSON.stringify({}), // press_button은 current_code만 사용
             }),
             fetch("/trigger_haptic", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              // 굳이 바디 필요 없으면 빈 객체 보내도 됨
               body: JSON.stringify({}),
             }),
           ]);
@@ -84,7 +123,7 @@
 
           const s = document.getElementById("status");
           s.textContent =
-            "Armed Pressed | seq=" +
+            "Signal Sent | seq=" +
             pressData.seq +
             " | code=(" +
             pressData.codeX +
@@ -95,8 +134,31 @@
             hapticData.haptic_seq;
         } catch (err) {
           console.error(err);
+          document.getElementById("status").textContent =
+            "Error (sendSignal): " + err;
+        }
+      }
+      
+      // Visual Cue 토글 요청
+      async function toggleCue() {
+        try {
+          const res = await fetch("/toggle_cue", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+          });
+
+          const data = await res.json();
+          console.log("toggle_cue:", data);
+
           const s = document.getElementById("status");
-          s.textContent = "Error: " + err;
+          s.textContent = "Cue toggled | cue_seq=" + data.cue_seq;
+        } catch (err) {
+          console.error(err);
+          document.getElementById("status").textContent =
+            "Error (toggleCue): " + err;
         }
       }
     </script>
